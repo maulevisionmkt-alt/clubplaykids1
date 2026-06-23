@@ -134,11 +134,14 @@ document.body.appendChild(script);
 
 function registrarVisita(id){
 
+document.getElementById("resultado").innerHTML =
+"Registrando visita...";
+
 const script =
 document.createElement("script");
 
 script.src =
-`${API_URL}?id=${id}&action=visita&callback=mostrarSocio`;
+`${API_URL}?id=${id}&action=visita&callback=mostrarSocio&t=${Date.now()}`;
 
 document.body.appendChild(script);
 
