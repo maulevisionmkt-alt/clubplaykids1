@@ -26,7 +26,38 @@ const API_URL = "https://script.google.com/macros/s/AKfycbw3xN290pHD_AT9Urpy3DxU
 const params = new URLSearchParams(window.location.search);
 const id = params.get("id");
 
-async function cargarSocio() {
+function mostrarSocio(socio) {
+  const app = document.getElementById("app");
+
+  if (socio.error) {
+    app.innerHTML = "Socio no encontrado.";
+    return;
+  }
+
+  app.innerHTML = `
+    <div class="top">
+      <div class="badge">👑 CLUB PLAYKIDS</div>
+      <h1>Credencial digital</h1>
+    </div>
+
+    <div class="name">${socio.nombre}</div>
+    <div class="row"><b>Socio:</b> ${socio.id}</div>
+    <div class="row"><b>Apoderado:</b> ${socio.apoderado}</div>
+    <div class="row"><b>Estado:</b> <span class="status">${socio.estado}</span></div>
+
+    <div class="row">Visitas acumuladas</div>
+    <div class="visits">${socio.visitas}</div>
+
+    <div class="row">🎁 <b>${socio.premio}</b></div>
+    <div class="row">🎂 Cumpleaños: ${socio.cumpleanos}</div>
+
+    <div class="small">
+      Esta credencial identifica al socio. Las visitas solo pueden ser registradas por PlayKids.
+    </div>
+  `;
+}
+
+function cargarSocio() {
   const app = document.getElementById("app");
 
   if (!id) {
@@ -34,39 +65,9 @@ async function cargarSocio() {
     return;
   }
 
-  try {
-    const res = await fetch(`${API_URL}?id=${id}`);
-    const socio = await res.json();
-
-    if (socio.error) {
-      app.innerHTML = "Socio no encontrado.";
-      return;
-    }
-
-    app.innerHTML = `
-      <div class="top">
-        <div class="badge">👑 CLUB PLAYKIDS</div>
-        <h1>Credencial digital</h1>
-      </div>
-
-      <div class="name">${socio.nombre}</div>
-      <div class="row"><b>Socio:</b> ${socio.id}</div>
-      <div class="row"><b>Apoderado:</b> ${socio.apoderado}</div>
-      <div class="row"><b>Estado:</b> <span class="status">${socio.estado}</span></div>
-
-      <div class="row">Visitas acumuladas</div>
-      <div class="visits">${socio.visitas}</div>
-
-      <div class="row">🎁 <b>${socio.premio}</b></div>
-      <div class="row">🎂 Cumpleaños: ${socio.cumpleanos}</div>
-
-      <div class="small">
-        Esta credencial identifica al socio. Las visitas solo pueden ser registradas por PlayKids.
-      </div>
-    `;
-  } catch (error) {
-    app.innerHTML = "Error al cargar los datos.";
-  }
+  const script = document.createElement("script");
+  script.src = `${API_URL}?id=${id}&callback=mostrarSocio`;
+  document.body.appendChild(script);
 }
 
 cargarSocio();
