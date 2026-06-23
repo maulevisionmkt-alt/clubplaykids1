@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Club PlayKids</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#eef7ff;margin:0;padding:20px;color:#123}
+    .card{max-width:420px;margin:auto;background:white;border-radius:24px;padding:22px;box-shadow:0 8px 25px #0002;border:4px solid #ffd43b}
+    .top{background:#1e88e5;color:white;border-radius:18px;padding:16px;text-align:center}
+    .badge{background:#ffd43b;color:#123;border-radius:999px;padding:6px 12px;font-weight:bold;display:inline-block}
+    h1{margin:10px 0 0;font-size:28px}
+    .name{font-size:26px;font-weight:bold;margin-top:24px}
+    .row{margin:10px 0;font-size:17px}
+    .visits{font-size:54px;font-weight:bold;color:#1e88e5;margin:8px 0}
+    .status{display:inline-block;background:#16a34a;color:white;border-radius:999px;padding:6px 12px;font-weight:bold}
+    .small{font-size:13px;color:#666;margin-top:18px}
+  </style>
+</head>
+<body>
+  <div class="card" id="app">Cargando...</div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbwTp8mHtWS3YYgHPEQanaGdAAU5pF58dSXyY_1WPN9bnwVvktR_ilYgEyPuPnGicZR8BQ/exec";
+
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+async function cargarSocio() {
+  const app = document.getElementById("app");
+
+  if (!id) {
+    app.innerHTML = "Falta el ID del socio.";
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_URL}?id=${id}`);
+    const socio = await res.json();
+
+    if (socio.error) {
+      app.innerHTML = "Socio no encontrado.";
+      return;
+    }
+
+    app.innerHTML = `
+      <div class="top">
+        <div class="badge">👑 CLUB PLAYKIDS</div>
+        <h1>Credencial digital</h1>
+      </div>
+
+      <div class="name">${socio.nombre}</div>
+      <div class="row"><b>Socio:</b> ${socio.id}</div>
+      <div class="row"><b>Apoderado:</b> ${socio.apoderado}</div>
+      <div class="row"><b>Estado:</b> <span class="status">${socio.estado}</span></div>
+
+      <div class="row">Visitas acumuladas</div>
+      <div class="visits">${socio.visitas}</div>
+
+      <div class="row">🎁 <b>${socio.premio}</b></div>
+      <div class="row">🎂 Cumpleaños: ${socio.cumpleanos}</div>
+
+      <div class="small">
+        Esta credencial identifica al socio. Las visitas solo pueden ser registradas por PlayKids.
+      </div>
+    `;
+  } catch (error) {
+    app.innerHTML = "Error al cargar los datos.";
+  }
+}
+
+cargarSocio();
+</script>
+</body>
+</html>
